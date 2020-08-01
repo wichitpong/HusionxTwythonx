@@ -4,6 +4,7 @@ import twythonx
 import json
 import random
 import queueAPI
+import prep
 
 ipc = twythonx.IPC("fusion")
 serv1 = twythonx.server("updateSensor")
@@ -11,10 +12,12 @@ serv2 = twythonx.server("twitupdate")
 
 #--------- start twythonx engine ---------#
 twitAPI = twythonx.twit()
-searchWord = "#CUASL"
+searchWord = "#cuasl0"
 
+#--------- start service engine : prep check and queueAPI ---------#
 queue = queueAPI.twitupdate(searchWord)
-print(queue)
+conv = prep.prep()
+
 
 def updateSensor():
     #--------- this function will trigger update sensor at husion(matlab) ---------#
@@ -25,21 +28,30 @@ def updateSensor():
 def twitHandler():
 
     while True:
+        time.sleep(10)
+
         tweet = twitAPI.search2(searchWord,'tweet_when','text','tweet_id')
-        
-        queue.autoupdate(tweet)
-        msg = queue.dequeue() 
-        print(msg)
-        templis = [2,random.randrange(50,100),random.randrange(50,100)]#lis[count]
-        if msg != None:
-            temp = json.dumps(templis)
+        queue.autoupdate(tweet)             #enqueue new twit
+        tempCell = queue.dequeue()          #dequeue : return front of queue
 
-        #print(tweet)
-        print(temp)
-        
-        serv2.publish(temp)
 
-        time.sleep(1)
+        if tempCell != None:
+            #check if have tweet and check exist location 
+            tempLocation = conv.check(tempCell['text'])
+            if tempLocation == None :
+                print("Location or Preposition not found at tweet :",tempCell['text'])
+                continue
+
+            tempDict = {"timeStamp": tempCell['tweet_when'],"location":tempLocation}
+            msg  = twythonx.toJson(tempDict)
+
+        else:
+            continue
+
+        print(msg)        
+        serv2.publish(msg)
+
+        
 
 
 if __name__ == "__main__":
