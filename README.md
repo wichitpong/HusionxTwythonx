@@ -16,21 +16,6 @@ pip3 install twython
 3.Install [ROS](http://wiki.ros.org/noetic/Installation/Ubuntu)
 > you can see our ROS installation tutorial at [https://github.com/CUASL/ipcx/wiki/Installation](https://github.com/CUASL/ipcx/wiki/Installation)
 
-4.Copy our library folder [ipcx](https://github.com/CUASL/ipcx/tree/master/ipcx) on our github
-to your project directory so that you can use our library.
-
-5.import our library in your code
-    
-python
-```python
-import twythonx
-```
-matlab
-```matlab
-addpath('twythonx')
-```
-
-https://github.com/CUASL/ipcx/wiki/Installation
 
 ## How to run
 
